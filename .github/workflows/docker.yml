@@ -1,0 +1,25 @@
+# Jim; I'm giving up on this docker thing. It just fails ,and I've spent about six weeks on this...
+name: Docker build
+on:
+  push:
+    branches: [ master, dev ]
+  pull_request:
+    branches: [ master ]
+jobs:
+  push_to_registry:
+    name: Push Docker image to ECR
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+
+      - name: Build and push Docker image
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 291801017125.dkr.ecr.us-east-1.amazonaws.com
+          rev=$(git rev-parse --short HEAD)
+          docker build . -t docker-shopifly
+          docker tag docker-shopifly:latest 291801017125.dkr.ecr.us-east-1.amazonaws.com/docker-shopifly:$rev
+          docker push 291801017125.dkr.ecr.us-east-1.amazonaws.com/docker-shopifly:$rev
