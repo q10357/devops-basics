@@ -23,3 +23,5 @@
 hs_err_pid*
 /.idea/
 /target/
+/infra/.terraform.lock.hcl
+/infra/terraform.tfstate
